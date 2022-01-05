@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Deserializer {
+public class Deserializer extends Throwable {
 
     List<Driver> Deserialize()
     {       
@@ -10,6 +10,7 @@ public class Deserializer {
             FileInputStream fileinstream = new FileInputStream("database");
             ObjectInputStream objinstream = new ObjectInputStream(fileinstream);
  
+            @SuppressWarnings("unchecked")
             List<Driver> driverList = (List<Driver>) objinstream.readObject();
 
             objinstream.close();
@@ -29,7 +30,9 @@ public class Deserializer {
         }
     }
 
-    void ShowList(List<Driver> driverList) {
+    void ShowList() {
+        List<Driver> driverList = new ArrayList<>();
+        driverList = Deserialize();
         for (Driver drivers : driverList) {
             System.out.println(drivers);
         }

@@ -5,26 +5,20 @@ public class VehiclesConductors
 {
     public static void main(String[] args) throws Exception 
     {
-        File file = new File("database");
+        File database = new File("database");
         Deserializer deserializer = new Deserializer();
-        List<Driver> deserializesList = new ArrayList<>();
         DriverLicense driverLicense = new DriverLicense();
-        driverLicense.id = "82F38";
-        if (file.createNewFile())
-        {
-            deserializesList.add(new Driver("Jodddhn", "Kennedy", 39, 'M', driverLicense));
-            Serializer serializer = new Serializer();
-            serializer.AddSerialize(deserializesList);
-        }
-        else
-        {
-            deserializesList = deserializer.Deserialize();
-            deserializesList.add(new Driver("Jodddhn", "Kennedy", 39, 'M', driverLicense));
-            Serializer serializer = new Serializer();
-            serializer.AddSerialize(deserializesList);
-        }
+        driverLicense.id = "61Y03";
+        Driver driver = new Driver("Abraham", "Lincoln", 47, 'M', driverLicense);
 
-        //Deserialize
-        deserializer.ShowList(deserializesList);
+        Serializer serializer = new Serializer();
+        serializer.AddDriver(driver, database.createNewFile());
+
+        // Deserialize
+        List<Driver> driverList = new ArrayList<>();
+        driverList = deserializer.Deserialize();
+        serializer.RemoveDriver();
+        deserializer.ShowList();
+
     }
 }
