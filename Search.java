@@ -2,11 +2,9 @@ import java.util.*;
 
 public abstract class Search extends Throwable {
 
-    int SearchDriver(String searchField, int searchCriteria)
+    int searchDriver(String searchField, int searchCriteria, List<Driver> driverList, DatabaseInstance databaseInstance)
     {
-        List<Driver> driverList = new ArrayList<>();
-        Deserializer deserializer = new Deserializer();
-        driverList = deserializer.Deserialize();
+        driverList = databaseInstance.getDriverList();
         switch (searchCriteria) {
             case 1:
             for (Driver drivers : driverList) {

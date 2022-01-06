@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Menu {
-    void ShowMenu()
+    void showMenu()
     {
         System.out.println(
         "What do you want to do ?:\n"+

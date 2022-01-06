@@ -9,7 +9,7 @@ public class Driver implements Serializable  {
  
     //Getters and setters
  
-    public Driver(String firstName, String lastName, int age, char gender, DriverLicense dLicense) {
+    Driver(String firstName, String lastName, int age, char gender, DriverLicense dLicense) {
         this.age = age;
         this.gender = gender;
         this.firstName = firstName;
