@@ -11,7 +11,6 @@ public abstract class Search extends Throwable {
                 if (searchField.toLowerCase().equals(drivers.lastName.toLowerCase()))
                 {
                     drivers.toString();
-                    System.out.println("Driver index is "+driverList.indexOf(drivers));
                     return driverList.indexOf(drivers);
                 }
             }
@@ -20,7 +19,6 @@ public abstract class Search extends Throwable {
                 if (searchField.toLowerCase().equals(drivers.driverLicense.id.toLowerCase()))
                 {
                     drivers.toString();
-                    System.out.println("Driver index is "+driverList.indexOf(drivers));
                     return driverList.indexOf(drivers);
                 }
             }
