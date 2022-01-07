@@ -62,7 +62,7 @@ public class DatabaseInstance extends Search implements DatabaseManager {
     {       
         try
         {
-            if (database.createNewFile() || Files.size(database.toPath()) < 1) {
+            if (database.createNewFile() || Files.size(database.toPath()) < 100) {
                 return this.driversList;
             }
             FileInputStream fileinstream = new FileInputStream(database);

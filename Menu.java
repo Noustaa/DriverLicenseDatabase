@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Menu {
+public class Menu{
     Scanner scan = new Scanner(System.in);
 
     int showMainMenu()
@@ -13,12 +13,18 @@ public class Menu {
         "3) Change a driver insurance policy\n"+
         "4) Show the complete drivers list\n"+
         "0) Exit");
-        int choice = scan.nextInt(); 
-        if (choice == 0)
-        {
-            scan.close();
+        System.out.print("\nPlease enter a valid number (0 - 4): ");
+        try {
+            int choice = scan.nextInt();
+            if (choice == 0)
+            {
+                scan.close();
+            }
+            return choice;
+        } catch (Exception e) {
+            scan.next(); //clear scanner input
+            return -1;
         }
-        return choice;
     }
 
     void showDriversList(List<Driver> driversList) 
@@ -75,6 +81,11 @@ public class Menu {
         System.out.println("Please enter your search:");
         String searchField = scan.next();
         int driverIndex = databaseInstance.searchDriver(searchField, searchCriteria, driversList, databaseInstance);
+        if (driverIndex == -1)
+        {
+            pressEnterToContinue();
+            return;
+        }
         String driverInfo = driversList.get(driverIndex).toString();
         if (!databaseInstance.removeDriver(driverIndex))
         {

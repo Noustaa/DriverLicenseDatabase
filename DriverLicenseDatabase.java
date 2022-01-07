@@ -2,7 +2,7 @@ public class DriverLicenseDatabase {
     public static void main(String[] args) throws Exception {
         Menu menu = new Menu();
         DatabaseInstance databaseInstance = new DatabaseInstance();
-
+    
         while(true)
         {
             int choice = menu.showMainMenu();
@@ -12,6 +12,7 @@ public class DriverLicenseDatabase {
                     break;
                 case 2:
                     menu.showRemoveDriver(databaseInstance.driversList, databaseInstance);
+
                     break;
                 case 3:
                     //TO DO
@@ -22,7 +23,6 @@ public class DriverLicenseDatabase {
                 case 0:
                     return;
                 default:
-                    System.out.println("Wrong selection.");
                     break;
             }
         }       
