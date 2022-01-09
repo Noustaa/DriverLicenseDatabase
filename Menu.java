@@ -56,14 +56,17 @@ public class Menu{
         char gender = scan.next().toUpperCase().charAt(0);
         System.out.print("License ID: ");
         String driverLicenseId = scan.next();
+        System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
+        String insurancePolicy = selectInsurancePolicy(scan.nextInt());
         DriverLicense driverLicense = new DriverLicense();
         driverLicense.id = driverLicenseId;
+        driverLicense.insuranceType = insurancePolicy;
         Driver driver = new Driver(firstName, lastName, age, gender, driverLicense);
         if (!databaseInstance.addDriver(driver)) {
-            System.out.println("There was an error. Driver creation cancelled.");
+            System.out.println("\033[3B\nThere was an error. Driver creation cancelled.");
             return;
         }
-        System.out.println("\n"+driver+"\n\nDriver has been created successfully.");
+        System.out.println("\033[3B\n"+driver+"\n\nDriver has been created successfully.");
         pressEnterToContinue();
     }
 
@@ -110,5 +113,20 @@ public class Menu{
         } catch (Exception e) {
             return;
         }
+    }
+
+    String selectInsurancePolicy(int choice)
+    {
+        switch (choice) {
+            case 1:
+                return "Liability coverage";
+            case 2:
+                return "Collision insurance";
+            case 3:
+                return "Comprehensive insurance";
+            default:
+                break;
+        }
+        return "";
     }
 }

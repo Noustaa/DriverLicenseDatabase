@@ -19,6 +19,6 @@ public class Driver implements Serializable  {
  
     @Override
     public String toString() {
-        return "Driver [id=" + driverLicense.id + ", firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + ", gender=" + gender +"]";
+        return "Driver [ID=" + driverLicense.id + ", FirstName=" + firstName + ", LastName=" + lastName + ", Age=" + age + ", Gender=" + gender +", Insurance policy="+driverLicense.insuranceType+"]";
     }
 }

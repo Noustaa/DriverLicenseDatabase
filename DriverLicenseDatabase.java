@@ -1,5 +1,5 @@
 public class DriverLicenseDatabase {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         Menu menu = new Menu();
         DatabaseInstance databaseInstance = new DatabaseInstance();
     
