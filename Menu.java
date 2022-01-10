@@ -12,8 +12,11 @@ public class Menu{
         "2) Remove a driver/license\n"+
         "3) Change a driver insurance policy\n"+
         "4) Show the complete drivers list\n"+
+        "5) Suspend a license\n"+
+        "6) Renew a license\n"+
+        "7) Remove a car\n"+
         "0) Exit");
-        System.out.print("\nPlease enter a valid number (0 - 4): ");
+        System.out.print("\nPlease enter a valid number (0 - 7): ");
         try {
             int choice = scan.nextInt();
             if (choice == 0)
@@ -37,7 +40,7 @@ public class Menu{
             return;
         }
         for (Driver drivers : driversList) {
-            System.out.println(drivers);
+            System.out.println(drivers+"\n");
         }
         pressEnterToContinue();
     }
@@ -54,19 +57,26 @@ public class Menu{
         int age = scan.nextInt();
         System.out.print("Gender (M or F): ");
         char gender = scan.next().toUpperCase().charAt(0);
-        System.out.print("License ID: ");
-        String driverLicenseId = scan.next();
-        System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
-        String insurancePolicy = selectInsurancePolicy(scan.nextInt());
         DriverLicense driverLicense = new DriverLicense();
-        driverLicense.id = driverLicenseId;
-        driverLicense.insuranceType = insurancePolicy;
+        System.out.print("License ID: ");
+        driverLicense.id = scan.next();
+        System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
+        driverLicense.insuranceType = selectInsurancePolicy(scan.nextInt());
+        System.out.println("\033[1A\033[K\033[s\033[1B\033[K\033[1B\033[K\033[1B\033[K\033[1B\033[K\033[uInsurance policy: "+driverLicense.insuranceType);
+        System.out.print("Enter the delivery date (DD/MM/YYYY): ");
+        driverLicense.deliveryDate = scan.next();
         Driver driver = new Driver(firstName, lastName, age, gender, driverLicense);
+        System.out.print("Do you want to add a car to this driver (Y for yes/N for no)? ");
+        if (scan.next().charAt(0) == 'Y')
+        {
+            driver.driverLicense.cars = new ArrayList<>();
+            driver.driverLicense.cars.add(addCar());
+        }
         if (!databaseInstance.addDriver(driver)) {
-            System.out.println("\033[3B\nThere was an error. Driver creation cancelled.");
+            System.out.println("\nThere was an error. Driver creation cancelled.");
             return;
         }
-        System.out.println("\033[3B\n"+driver+"\n\nDriver has been created successfully.");
+        System.out.println("\n"+driver+"\n\nDriver has been created successfully.");
         pressEnterToContinue();
     }
 
@@ -128,5 +138,79 @@ public class Menu{
                 break;
         }
         return "";
+    }
+
+    Car addCar()
+    {
+        Car car = new Car();
+        System.out.print("Please enter the car Numberplate: ");
+        scan.nextLine();
+        car.numberplate = scan.nextLine();
+        return car;
+    }
+
+    void removeCar(DatabaseInstance databaseInstance)
+    {
+        System.out.println("Do you want to select the driver by name or by license ID ? (1 for name, 2 for ID)");
+        int searchCriteria = scan.nextInt();
+        System.out.println("Please enter your search:");
+        String searchField = scan.next();
+        int driverIndex = databaseInstance.searchDriver(searchField, searchCriteria, databaseInstance.driversList, databaseInstance);
+        System.out.print("Do you want to remove this car (Y for yes/N for no) ? \033[s \n"+databaseInstance.driversList.get(driverIndex)+"\033[u");
+        if (scan.next().charAt(0) == 'Y')
+        {
+            databaseInstance.driversList.get(driverIndex).driverLicense.cars.remove(0);
+            databaseInstance.updateDatabase();
+            return;
+        }
+        else
+        {
+            System.out.println("\033[3B");
+            return;
+        }
+    }
+
+    void suspendLicense(DatabaseInstance databaseInstance)
+    {
+        System.out.println("Do you want to select the driver by name or by license ID ? (1 for name, 2 for ID)");
+        int searchCriteria = scan.nextInt();
+        System.out.println("Please enter your search:");
+        String searchField = scan.next();
+        int driverIndex = databaseInstance.searchDriver(searchField, searchCriteria, databaseInstance.driversList, databaseInstance);
+        System.out.print("Do you want to suspend this license (Y for yes/N for no) ? \033[s \n"+databaseInstance.driversList.get(driverIndex)+"\033[u");
+        if (scan.next().charAt(0) == 'Y')
+        {
+            databaseInstance.driversList.get(driverIndex).driverLicense.isSuspended = true;
+            System.out.println("\033[3BPlease enter the suspension end date (DDMMYYYY) : ");
+            databaseInstance.driversList.get(driverIndex).driverLicense.suspensionDate = scan.next();
+            databaseInstance.updateDatabase();
+            return;
+        }
+        else
+        {
+            System.out.println("\033[3B");
+            return;
+        }
+    }
+
+    void renewLicense(DatabaseInstance databaseInstance)
+    {
+        System.out.println("Do you want to select the driver by name or by license ID ? (1 for name, 2 for ID)");
+        int searchCriteria = scan.nextInt();
+        System.out.println("Please enter your search:");
+        String searchField = scan.next();
+        int driverIndex = databaseInstance.searchDriver(searchField, searchCriteria, databaseInstance.driversList, databaseInstance);
+        System.out.print("Do you want to renew this license (Y for yes/N for no) ? \033[s \n"+databaseInstance.driversList.get(driverIndex)+"\033[u");
+        if (scan.next().charAt(0) == 'Y')
+        {
+            databaseInstance.driversList.get(driverIndex).driverLicense.isSuspended = false;
+            databaseInstance.updateDatabase();
+            return;
+        }
+        else
+        {
+            System.out.println("\033[3B");
+            return;
+        }
     }
 }

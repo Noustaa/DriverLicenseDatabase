@@ -86,4 +86,21 @@ public class DatabaseInstance extends Search implements DatabaseManager {
             return null;
         }
     }
+
+    @Override
+    public void updateDatabase() {
+        try {
+            FileOutputStream fileoutstream = new FileOutputStream(database);
+            ObjectOutputStream objoutstream = new ObjectOutputStream(fileoutstream);
+            objoutstream.writeObject(this.driversList);
+            objoutstream.close();
+            fileoutstream.close();
+        } 
+        catch (IOException excep) 
+        {
+            excep.printStackTrace();
+            return;
+        }
+    }
+
 }

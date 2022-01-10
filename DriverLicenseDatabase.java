@@ -20,6 +20,15 @@ public class DriverLicenseDatabase {
                 case 4:
                     menu.showDriversList(databaseInstance.driversList);
                     break;
+                case 5:
+                    menu.suspendLicense(databaseInstance);
+                    break;
+                case 6:
+                    menu.renewLicense(databaseInstance);
+                    break;
+                case 7:
+                    menu.removeCar(databaseInstance);
+                    break;
                 case 0:
                     return;
                 default:
