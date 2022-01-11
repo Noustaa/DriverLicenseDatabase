@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
  
 public class Driver implements Serializable  {
  
@@ -25,11 +26,12 @@ public class Driver implements Serializable  {
             carStatus.append("No cars are registered for this driver.");
         }
         else{
-            carStatus.append("Cars registered for this driver:\n");
+            carStatus.append("Cars registered for this driver (Numberplates):\n");
             for (Car car : driverLicense.cars) {
                 carStatus.append(car+"\n");
             }
         }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         if (!driverLicense.isSuspended) {
             return "Driver [ID=" + driverLicense.id +
             ", FirstName=" + firstName +
@@ -37,7 +39,7 @@ public class Driver implements Serializable  {
             ", Age=" + age +
             ", Gender=" + gender +
             ", Insurance policy=" + driverLicense.insuranceType + "]\n" +
-            "Delivery date="+driverLicense.deliveryDate+"\n"+
+            "Delivery date="+dateFormat.format(driverLicense.deliveryDate)+"\n"+
             "This licence is active.\n"+
             carStatus;
         }
@@ -48,8 +50,8 @@ public class Driver implements Serializable  {
             ", Age=" + age +
             ", Gender=" + gender +
             ", Insurance policy=" + driverLicense.insuranceType + "]\n" +
-            "Delivery date="+driverLicense.deliveryDate+"\n"+
-            "This licence is suspended until: "+driverLicense.suspensionDate+"\n"+
+            "Delivery date="+dateFormat.format(driverLicense.deliveryDate)+"\n"+
+            "This licence is suspended until: "+dateFormat.format(driverLicense.suspensionDate)+"\n"+
             carStatus;
         }
     }

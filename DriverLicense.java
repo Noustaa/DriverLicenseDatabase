@@ -1,8 +1,9 @@
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 
 public class DriverLicense implements Serializable {
-    String id, insuranceType, deliveryDate, suspensionDate = "None";
+    String id, insuranceType;
+    Date deliveryDate, suspensionDate;
     Boolean isSuspended = false;
     List<Car> cars;
 }

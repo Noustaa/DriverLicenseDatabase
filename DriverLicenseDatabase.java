@@ -12,10 +12,9 @@ public class DriverLicenseDatabase {
                     break;
                 case 2:
                     menu.showRemoveDriver(databaseInstance.driversList, databaseInstance);
-
                     break;
                 case 3:
-                    //TO DO
+                    menu.changeInsurancePolicy(databaseInstance);
                     break;
                 case 4:
                     menu.showDriversList(databaseInstance.driversList);
@@ -28,6 +27,9 @@ public class DriverLicenseDatabase {
                     break;
                 case 7:
                     menu.removeCar(databaseInstance);
+                    break;
+                case 8:
+                    menu.addCar(databaseInstance, true);
                     break;
                 case 0:
                     return;
