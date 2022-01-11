@@ -1,8 +1,8 @@
 import java.util.List;
 
 public interface DatabaseManager {
-    boolean addDriver(Driver driver);
-    boolean removeDriver(int driverIndex);
+    void addDriver(Driver driver) throws DriverAlreadyExistException;
+    void removeDriver(int driverIndex);
     List<Driver> getDriverList();
     public void updateDatabase();
 }

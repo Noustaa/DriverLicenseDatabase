@@ -13,12 +13,21 @@ public class DatabaseInstance extends Search implements DatabaseManager {
     }
 
     @Override
-    public boolean addDriver(Driver driver)
+    public void addDriver(Driver driver) throws DriverAlreadyExistException
     {
         try
         {
             if (!database.createNewFile()) {
                 driversList = getDriverList();
+            }
+            for (Driver drivers : driversList) {
+                    if (drivers.firstName.equalsIgnoreCase(driver.firstName) && 
+                    drivers.lastName.equalsIgnoreCase(driver.lastName) && 
+                    drivers.birthDate.equals(driver.birthDate) && 
+                    (drivers.gender == driver.gender))
+                    {
+                        throw new DriverAlreadyExistException("Driver already exist. Creation has been cancelled.");
+                    }
             }
             driversList.add(driver);
             FileOutputStream fileoutstream = new FileOutputStream(database);
@@ -26,17 +35,17 @@ public class DatabaseInstance extends Search implements DatabaseManager {
             objoutstream.writeObject(driversList);
             objoutstream.close();
             fileoutstream.close();
-            return true;
+            return;
         } 
         catch (IOException excep) 
         {
             excep.printStackTrace();
-            return false;
+            return;
         }
     }
 
     @Override
-    public boolean removeDriver(int driverIndex)
+    public void removeDriver(int driverIndex)
     {
         try 
         {
@@ -47,12 +56,12 @@ public class DatabaseInstance extends Search implements DatabaseManager {
             objoutstream.writeObject(driversList);
             objoutstream.close();
             fileoutstream.close();
-            return true;
+            return;
         } 
         catch (IOException excep) 
         {
             excep.printStackTrace();
-            return false;
+            return;
         }
     }
 

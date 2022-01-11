@@ -50,47 +50,79 @@ public class Menu{
     void showCreateDriver(DatabaseInstance databaseInstance)
     {
         clearScreen();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        boolean inputTest = false;
         System.out.println("Add a new driver/license...\n");
         scan.nextLine(); //init
         System.out.print("First Name: ");
-        String firstName = scan.nextLine();
+        String firstName = scan.nextLine().trim();
         System.out.print("Last Name: ");
-        String lastName = scan.nextLine();
-        System.out.print("Age: ");
-        int age = scan.nextInt();
-        scan.nextLine(); //init
-        System.out.print("Gender (M or F): ");
-        char gender = scan.nextLine().toUpperCase().charAt(0);
+        String lastName = scan.nextLine().trim();
+        String birthDateString;
+        Date birthDate = new Date();
+        while (!inputTest)
+        {
+            try {
+                System.out.print("Enter the Birth Date (DD/MM/YYYY): ");
+                birthDateString = scan.nextLine().trim();
+                birthDate = dateFormat.parse(birthDateString);
+                inputTest = true;
+            } catch (Exception e) {
+                inputTest = false;
+            }
+        }
+        inputTest = false;
+        char gender = ' ';
+        while (gender != 'M' && gender != 'F')
+        {
+            System.out.print("Gender (M or F): ");
+            gender = scan.nextLine().toUpperCase().trim().charAt(0);
+        }
         DriverLicense driverLicense = new DriverLicense();
         System.out.print("License ID: ");
         driverLicense.id = scan.nextLine();
-        System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
-        driverLicense.insuranceType = selectInsurancePolicy(scan.nextInt());
+        while (!inputTest) {
+            try {
+                System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
+                driverLicense.insuranceType = selectInsurancePolicy(scan.nextInt());
+                inputTest = true;
+            } catch (Exception e) {
+                inputTest = false;
+                scan.nextLine();
+            }
+        }
+        inputTest = false;
         System.out.println("\033[1A\033[K\033[s\033[1B\033[K\033[1B\033[K\033[1B\033[K\033[1B\033[K\033[uInsurance policy: "+driverLicense.insuranceType);
         String deliveryDate = "";
-        Boolean formatTest = false;
         scan.nextLine(); //init
-        while (!formatTest)
+        while (!inputTest)
         {
             try {
                 System.out.print("Enter the delivery date (DD/MM/YYYY): ");
-                deliveryDate = scan.nextLine();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                deliveryDate = scan.nextLine().trim();
                 driverLicense.deliveryDate = dateFormat.parse(deliveryDate);
-                formatTest = true;
+                inputTest = true;
             } catch (Exception e) {
-                formatTest = false;
+                inputTest = false;
             }
         }
-        Driver driver = new Driver(firstName, lastName, age, gender, driverLicense);
+        inputTest = false;
+        Driver driver = new Driver(firstName, lastName, birthDate, gender, driverLicense);
         System.out.print("Do you want to add a car to this driver (Y for yes/N for no)? ");
-        if (scan.next().charAt(0) == 'Y')
+        if (scan.next().toUpperCase().charAt(0) == 'Y')
         {
             driver.driverLicense.cars = new ArrayList<>();
             driver.driverLicense.cars.add(addCar(databaseInstance, false));
         }
-        if (!databaseInstance.addDriver(driver)) {
-            System.out.println("\nThere was an error. Driver creation cancelled.");
+        else 
+        {
+            driver.driverLicense.cars = new ArrayList<>();
+        }
+        try {
+            databaseInstance.addDriver(driver);
+        } catch (DriverAlreadyExistException e) {
+            System.out.println("\n\n"+e.getMessage());
+            pressEnterToContinue();
             return;
         }
         System.out.println("\n"+driver+"\n\nDriver has been created successfully.");
@@ -114,9 +146,12 @@ public class Menu{
             return;
         }
         String driverInfo = driversList.get(driverIndex).toString();
-        if (!databaseInstance.removeDriver(driverIndex))
-        {
+
+        try {
+            databaseInstance.removeDriver(driverIndex);
+        } catch (Exception e) {
             System.out.println("There was an error. Driver has not been removed.");
+            pressEnterToContinue();
             return;
         }
         System.out.println("\n"+driverInfo+"\n\nThe driver has been removed correctly.");
@@ -139,7 +174,7 @@ public class Menu{
         }
     }
 
-    String selectInsurancePolicy(int choice)
+    String selectInsurancePolicy(int choice) throws Exception
     {
         switch (choice) {
             case 1:
@@ -149,27 +184,26 @@ public class Menu{
             case 3:
                 return "Comprehensive insurance";
             default:
-                break;
+                throw new Exception("Wrong value.");
         }
-        return "";
     }
 
     Car addCar(DatabaseInstance databaseInstance, boolean withSearch)
     {
-        clearScreen();
         Car car = new Car();
         if (withSearch)
         {
-        int driverIndex = databaseInstance.searchDriver(databaseInstance, scan);
-        clearScreen();
-        System.out.print("Please enter the car Numberplate: ");
-        scan.nextLine();
-        car.numberplate = scan.nextLine();
-        databaseInstance.driversList.get(driverIndex).driverLicense.cars.add(car);
-        databaseInstance.updateDatabase();
-        System.out.println("\033[3BThe car \""+car+"\" has been correctly added.");
-        pressEnterToContinue();
-        return car;
+            clearScreen();
+            int driverIndex = databaseInstance.searchDriver(databaseInstance, scan);
+            clearScreen();
+            System.out.print("Please enter the car Numberplate: ");
+            scan.nextLine();
+            car.numberplate = scan.nextLine();
+            databaseInstance.driversList.get(driverIndex).driverLicense.cars.add(car);
+            databaseInstance.updateDatabase();
+            System.out.println("\033[3BThe car \""+car+"\" has been correctly added.");
+            pressEnterToContinue();
+            return car;
         }
         System.out.print("Please enter the car Numberplate: ");
         scan.nextLine();
@@ -198,18 +232,20 @@ public class Menu{
         if (scan.next().charAt(0) == 'Y')
         {
             databaseInstance.driversList.get(driverIndex).driverLicense.isSuspended = true;
-            String suspensionDate = "";
-            while (!suspensionDate.matches("[0-9]{2}/[0-9]{2}/[0-9]{4}"))
+            boolean formatTest = false;
+            scan.nextLine(); //init
+            while (!formatTest)
             {
-                clearScreen();
-                System.out.println("Please enter the suspension end date (DD/MM/YYYY) : ");
-                suspensionDate = scan.next();
-            }
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                databaseInstance.driversList.get(driverIndex).driverLicense.suspensionDate = dateFormat.parse(suspensionDate);
-            } catch (Exception e) {
-                return;
+                try {
+                    clearScreen();
+                    System.out.print("Enter the suspension end date (DD/MM/YYYY): ");
+                    String suspensionDate = scan.nextLine();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    databaseInstance.driversList.get(driverIndex).driverLicense.suspensionDate = dateFormat.parse(suspensionDate);
+                    formatTest = true;
+                } catch (Exception e) {
+                    formatTest = false;
+                }
             }
             databaseInstance.updateDatabase();
             return;
@@ -247,8 +283,17 @@ public class Menu{
         clearScreen();
         int driverIndex = databaseInstance.searchDriver(databaseInstance, scan);
         clearScreen();
-        System.out.print("Please select the new insurance policy: \033[s\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[u");
-        databaseInstance.driversList.get(driverIndex).driverLicense.insuranceType = selectInsurancePolicy(scan.nextInt());
+        boolean inputTest = false;
+        while (!inputTest) {
+            try {
+                System.out.print("Please select the new insurance policy: \033[s\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[u");
+                databaseInstance.driversList.get(driverIndex).driverLicense.insuranceType = selectInsurancePolicy(scan.nextInt());
+                inputTest = true;
+            } catch (Exception e) {
+                inputTest = false;
+                scan.nextLine();
+            }
+        }
         clearScreen();
         System.out.println("The insurance policy has correctly been changed to: "+databaseInstance.driversList.get(driverIndex).driverLicense.insuranceType);
         pressEnterToContinue();

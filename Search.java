@@ -4,13 +4,26 @@ public abstract class Search extends Throwable {
 
     int searchDriver(DatabaseInstance databaseInstance, Scanner scan)
     {
-        System.out.println("Do you want to select the driver by name or by license ID ? (1 for name, 2 for ID, 3 to select from the drivers list)");
-        int searchCriteria = scan.nextInt();
+        boolean inputTest = false;
+        int searchCriteria = 0;
+        while (!inputTest)
+        {
+            try {
+                System.out.println("Do you want to select the driver by name or by license ID ? (1 for name, 2 for ID, 3 to select from the drivers list)");
+                searchCriteria = scan.nextInt();
+                if (searchCriteria<1 || searchCriteria>3) {throw new Exception("Wrong number.");}
+                inputTest = true;
+            } catch (Exception e) {
+                inputTest = false;
+                scan.nextLine();
+            }
+        }
+        inputTest = false;
         String searchField = "";
         if (searchCriteria != 3) 
         {
-            System.out.println("Please enter your search:");
-            searchField = scan.next();
+                System.out.println("Please enter your search:");
+                searchField = scan.next();
         }
         switch (searchCriteria) {
             case 1:
