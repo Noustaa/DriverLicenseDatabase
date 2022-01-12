@@ -13,7 +13,7 @@ public class DatabaseInstance extends Search implements DatabaseManager {
     }
 
     @Override
-    public void addDriver(Driver driver) throws DriverAlreadyExistException
+    public void addDriver(Driver driver) throws DriverAlreadyExistsException, LicenseIdAlreadyExistsException
     {
         try
         {
@@ -26,9 +26,14 @@ public class DatabaseInstance extends Search implements DatabaseManager {
                     drivers.birthDate.equals(driver.birthDate) && 
                     (drivers.gender == driver.gender))
                     {
-                        throw new DriverAlreadyExistException("Driver already exist. Creation has been cancelled.");
+                        throw new DriverAlreadyExistsException("Driver already exists. Creation has been cancelled.");
+                    }
+                    if (drivers.driverLicense.id.equalsIgnoreCase(driver.driverLicense.id))
+                    {
+                        throw new LicenseIdAlreadyExistsException("This licence ID already exists. Creation has been cancelled.");
                     }
             }
+
             driversList.add(driver);
             FileOutputStream fileoutstream = new FileOutputStream(database);
             ObjectOutputStream objoutstream = new ObjectOutputStream(fileoutstream);

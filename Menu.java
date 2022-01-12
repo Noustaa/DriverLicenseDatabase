@@ -80,7 +80,7 @@ public class Menu{
         }
         DriverLicense driverLicense = new DriverLicense();
         System.out.print("License ID: ");
-        driverLicense.id = scan.nextLine();
+        driverLicense.id = scan.nextLine().trim().toUpperCase();
         while (!inputTest) {
             try {
                 System.out.print("Please select an insurance policy:\n1) Liability coverage\n2) Collision insurance\n3) Comprehensive insurance\033[3A\033[8C");
@@ -111,8 +111,13 @@ public class Menu{
         System.out.print("Do you want to add a car to this driver (Y for yes/N for no)? ");
         if (scan.next().toUpperCase().charAt(0) == 'Y')
         {
-            driver.driverLicense.cars = new ArrayList<>();
-            driver.driverLicense.cars.add(addCar(databaseInstance, false));
+            try {
+                driver.driverLicense.cars = new ArrayList<>();
+                driver.driverLicense.cars.add(addCar(databaseInstance, false));
+            } catch (CarNumberplateAlreadyExistsException e) {
+                driver.driverLicense.cars = new ArrayList<>();
+                System.out.println("\n"+e.getMessage());
+            }
         }
         else 
         {
@@ -120,11 +125,15 @@ public class Menu{
         }
         try {
             databaseInstance.addDriver(driver);
-        } catch (DriverAlreadyExistException e) {
+        } catch (DriverAlreadyExistsException e) {
             System.out.println("\n\n"+e.getMessage());
             pressEnterToContinue();
             return;
-        }
+        } catch (LicenseIdAlreadyExistsException e) {
+            System.out.println("\n\n"+e.getMessage());
+            pressEnterToContinue();
+            return;
+        }        
         System.out.println("\n"+driver+"\n\nDriver has been created successfully.");
         pressEnterToContinue();
     }
@@ -188,7 +197,7 @@ public class Menu{
         }
     }
 
-    Car addCar(DatabaseInstance databaseInstance, boolean withSearch)
+    Car addCar(DatabaseInstance databaseInstance, boolean withSearch) throws CarNumberplateAlreadyExistsException
     {
         Car car = new Car();
         if (withSearch)
@@ -198,7 +207,15 @@ public class Menu{
             clearScreen();
             System.out.print("Please enter the car Numberplate: ");
             scan.nextLine();
-            car.numberplate = scan.nextLine();
+            car.numberplate = scan.nextLine().trim().toUpperCase();
+            for (Driver driver : databaseInstance.driversList) {
+                for (Car carCheck : driver.driverLicense.cars) {
+                    if (car.numberplate.equalsIgnoreCase(carCheck.numberplate))
+                    {
+                        throw new CarNumberplateAlreadyExistsException("This car numberplate already exists. The car won't be added.");
+                    }
+                }
+            }
             databaseInstance.driversList.get(driverIndex).driverLicense.cars.add(car);
             databaseInstance.updateDatabase();
             System.out.println("\033[3BThe car \""+car+"\" has been correctly added.");
@@ -207,7 +224,15 @@ public class Menu{
         }
         System.out.print("Please enter the car Numberplate: ");
         scan.nextLine();
-        car.numberplate = scan.nextLine();
+        car.numberplate = scan.nextLine().trim().toUpperCase();
+        for (Driver driver : databaseInstance.driversList) {
+            for (Car carCheck : driver.driverLicense.cars) {
+                if (car.numberplate.equalsIgnoreCase(carCheck.numberplate))
+                {
+                    throw new CarNumberplateAlreadyExistsException("This car numberplate already exists. The car won't be added.");
+                }
+            }
+        }
         return car;
     }
 
@@ -229,7 +254,7 @@ public class Menu{
         int driverIndex = databaseInstance.searchDriver(databaseInstance, scan);
         clearScreen();
         System.out.print("Do you want to suspend this license (Y for yes/N for no) ? \033[s \n"+databaseInstance.driversList.get(driverIndex)+"\033[u");
-        if (scan.next().charAt(0) == 'Y')
+        if (scan.next().toUpperCase().charAt(0) == 'Y')
         {
             databaseInstance.driversList.get(driverIndex).driverLicense.isSuspended = true;
             boolean formatTest = false;
@@ -262,7 +287,7 @@ public class Menu{
         int driverIndex = databaseInstance.searchDriver(databaseInstance, scan);
         clearScreen();
         System.out.print("Do you want to renew this license (Y for yes/N for no) ? \033[s \n"+databaseInstance.driversList.get(driverIndex)+"\033[u");
-        if (scan.next().charAt(0) == 'Y')
+        if (scan.next().toUpperCase().charAt(0) == 'Y')
         {
             databaseInstance.driversList.get(driverIndex).driverLicense.isSuspended = false;
             databaseInstance.updateDatabase();

@@ -29,7 +29,12 @@ public class DriverLicenseDatabase {
                     menu.removeCar(databaseInstance);
                     break;
                 case 8:
+                try {
                     menu.addCar(databaseInstance, true);
+                } catch (CarNumberplateAlreadyExistsException e) {
+                    System.out.println("\n"+e.getMessage());
+                    menu.pressEnterToContinue();
+                }
                     break;
                 case 0:
                     return;

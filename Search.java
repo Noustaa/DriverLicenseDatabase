@@ -49,8 +49,20 @@ public abstract class Search extends Throwable {
                     System.out.println(i+") "+drivers);
                     i++;
                 }
-                System.out.print("\033[u");
-                return (scan.nextInt()-1);
+                int choice = -1;
+                while (!inputTest)
+                {
+                        try {
+                            System.out.print("\033[u \033[1D\033[K");
+                            choice = scan.nextInt() - 1;
+                            inputTest = true;
+                        } catch (Exception e) {
+                            inputTest = false;
+                            scan.nextLine();
+                        }
+                }
+                inputTest = false;
+                return (choice);
             default:
             break;
         }
