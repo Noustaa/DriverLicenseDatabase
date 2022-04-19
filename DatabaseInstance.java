@@ -13,30 +13,44 @@ public class DatabaseInstance extends Search implements DatabaseManager {
     }
 
     @Override
-    public boolean addDriver(Driver driver)
+    public void addDriver(Driver driver) throws DriverAlreadyExistsException, LicenseIdAlreadyExistsException
     {
         try
         {
             if (!database.createNewFile()) {
                 driversList = getDriverList();
             }
+            for (Driver drivers : driversList) {
+                    if (drivers.firstName.equalsIgnoreCase(driver.firstName) && 
+                    drivers.lastName.equalsIgnoreCase(driver.lastName) && 
+                    drivers.birthDate.equals(driver.birthDate) && 
+                    (drivers.gender == driver.gender))
+                    {
+                        throw new DriverAlreadyExistsException("Driver already exists. Creation has been cancelled.");
+                    }
+                    if (drivers.driverLicense.id.equalsIgnoreCase(driver.driverLicense.id))
+                    {
+                        throw new LicenseIdAlreadyExistsException("This licence ID already exists. Creation has been cancelled.");
+                    }
+            }
+
             driversList.add(driver);
             FileOutputStream fileoutstream = new FileOutputStream(database);
             ObjectOutputStream objoutstream = new ObjectOutputStream(fileoutstream);
             objoutstream.writeObject(driversList);
             objoutstream.close();
             fileoutstream.close();
-            return true;
+            return;
         } 
         catch (IOException excep) 
         {
             excep.printStackTrace();
-            return false;
+            return;
         }
     }
 
     @Override
-    public boolean removeDriver(int driverIndex)
+    public void removeDriver(int driverIndex)
     {
         try 
         {
@@ -47,12 +61,12 @@ public class DatabaseInstance extends Search implements DatabaseManager {
             objoutstream.writeObject(driversList);
             objoutstream.close();
             fileoutstream.close();
-            return true;
+            return;
         } 
         catch (IOException excep) 
         {
             excep.printStackTrace();
-            return false;
+            return;
         }
     }
 
@@ -86,4 +100,21 @@ public class DatabaseInstance extends Search implements DatabaseManager {
             return null;
         }
     }
+
+    @Override
+    public void updateDatabase() {
+        try {
+            FileOutputStream fileoutstream = new FileOutputStream(database);
+            ObjectOutputStream objoutstream = new ObjectOutputStream(fileoutstream);
+            objoutstream.writeObject(this.driversList);
+            objoutstream.close();
+            fileoutstream.close();
+        } 
+        catch (IOException excep) 
+        {
+            excep.printStackTrace();
+            return;
+        }
+    }
+
 }

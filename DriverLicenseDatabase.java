@@ -1,5 +1,5 @@
 public class DriverLicenseDatabase {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         Menu menu = new Menu();
         DatabaseInstance databaseInstance = new DatabaseInstance();
     
@@ -12,13 +12,29 @@ public class DriverLicenseDatabase {
                     break;
                 case 2:
                     menu.showRemoveDriver(databaseInstance.driversList, databaseInstance);
-
                     break;
                 case 3:
-                    //TO DO
+                    menu.changeInsurancePolicy(databaseInstance);
                     break;
                 case 4:
                     menu.showDriversList(databaseInstance.driversList);
+                    break;
+                case 5:
+                    menu.suspendLicense(databaseInstance);
+                    break;
+                case 6:
+                    menu.renewLicense(databaseInstance);
+                    break;
+                case 7:
+                    menu.removeCar(databaseInstance);
+                    break;
+                case 8:
+                try {
+                    menu.addCar(databaseInstance, true);
+                } catch (CarNumberplateAlreadyExistsException e) {
+                    System.out.println("\n"+e.getMessage());
+                    menu.pressEnterToContinue();
+                }
                     break;
                 case 0:
                     return;
